@@ -10,6 +10,7 @@ from objects import users
 class Level():
     def __init__(self):
         connection=None
+        print(os.environ.get('user'))
         try:
             connection = psycopg2.connect(
             database=os.environ.get('database'),
