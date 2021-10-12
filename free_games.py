@@ -13,12 +13,15 @@ class freegames(commands.Cog):
     @commands.has_permissions(manage_channels=True)
     @commands.command()
     async def setfree(self,ctx,ch):
-        sql=Level()
         chas=int(ch[2:-1])
         if self.client.get_channel(chas):
+            sql=Level()
             server_id=ctx.guild.id
             sql.free_games(server_id,chas)
-        sql.disconect()
+            ctx.reply("se ha añadido el "+ch+"canal para que envie juegos gratis")
+            sql.disconect()
+        else:
+            ctx.reply("el canal no existe o no lo has escrito bien")
             
 def setup(client):
   client.add_cog(freegames(client))

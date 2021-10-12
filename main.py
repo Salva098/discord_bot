@@ -10,7 +10,7 @@ import os
 import music
 import experience
 import free_games
-cogs=[music, experience,free_games]
+cogs=[music,experience,free_games]
 bot=commands.Bot(command_prefix='-')
 togetherControl = DiscordTogether(bot)
 # bot=commands.Bot(command_prefix='-')
@@ -79,4 +79,4 @@ async def on_ready():
 
 # ahiidisegratis
 
-bot.run(os.environ.get("DSC_bot"))
+bot.run(os.environ.get('DSC_bot'))
