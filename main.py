@@ -65,6 +65,7 @@ async def on_message(message):
 @bot.event
 async def on_ready():
     DiscordComponents(bot)
+    bot.togetherControl = DiscordTogether(bot)
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="Porno solo"))
     print('My Ready is Body')
     Juegos_gratis.start()
