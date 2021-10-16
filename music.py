@@ -19,11 +19,12 @@ ytdlopts = {
     'restrictfilenames': True,
     'noplaylist': True,
     'nocheckcertificate': True,
-    'ignoreerrors': False,
+    'ignoreerrors': True,
     'logtostderr': False,
     'quiet': True,
     'no_warnings': True,
     'default_search': 'auto',
+    'age_limit': '15',
     'source_address': '0.0.0.0'  # ipv6 addresses cause issues sometimes
 }
 
@@ -65,23 +66,35 @@ class YTDLSource(discord.PCMVolumeTransformer):
     @classmethod
     async def create_source(cls, ctx, search: str, *, loop, download=False):
         loop = loop or asyncio.get_event_loop()
-
+        playlist=[]
+      
         to_run = partial(ytdl.extract_info, url=search, download=download)
-        data = await loop.run_in_executor(None, to_run)
+        dat = await loop.run_in_executor(None, to_run)
 
-        if 'entries' in data:
+        if 'entries' in dat:
             # take first item from a playlist
-            data = data['entries'][0]
+            data = dat['entries'][0]
+            embed = discord.Embed(title="", description=f"Queued [{dat['title']}]({dat['webpage_url']}) [{ctx.author.mention}]", color=discord.Color.green())
+            dat=dat['entries']
+            
+        else:
+            embed = discord.Embed(title="", description=f"Queued [{dat['title']}]({dat['webpage_url']}) [{ctx.author.mention}]", color=discord.Color.green())
+            data =dat
 
-        embed = discord.Embed(title="", description=f"Queued [{data['title']}]({data['webpage_url']}) [{ctx.author.mention}]", color=discord.Color.green())
         await ctx.send(embed=embed)
 
         if download:
             source = ytdl.prepare_filename(data)
         else:
-            return {'webpage_url': data['webpage_url'], 'requester': ctx.author, 'title': data['title']}
-
-        return cls(discord.FFmpegPCMAudio(source), data=data, requester=ctx.author)
+            try:
+                for x in dat:
+                    if x is not None:
+                        playlist.append({'webpage_url': x['webpage_url'], 'requester': ctx.author, 'title': x['title']})
+                    # return {'webpage_url': data['webpage_url'], 'requester': ctx.author, 'title': data['title']}
+                return playlist,True
+            except:
+                return {'webpage_url': dat['webpage_url'], 'requester': ctx.author, 'title': dat['title']},False
+        return cls(discord.FFmpegPCMAudio(source), data=data, requester=ctx.author),dat
 
     @classmethod
     async def regather_stream(cls, data, *, loop):
@@ -268,10 +281,12 @@ class Music(commands.Cog):
 
         # If download is False, source will be a dict which will be used later to regather the stream.
         # If download is True, source will be a discord.FFmpegPCMAudio with a VolumeTransformer.
-        source = await YTDLSource.create_source(ctx, search, loop=self.bot.loop, download=False)
-
-        await player.queue.put(source)
-
+        source,list= await YTDLSource.create_source(ctx, search, loop=self.bot.loop, download=False)
+        if list:
+            for x in source:
+                await player.queue.put(x)
+        else:
+            await player.queue.put(source)
     @commands.command(name='pause', description="pauses music")
     async def pause_(self, ctx):
         """Pause the currently playing song."""
@@ -378,7 +393,7 @@ class Music(commands.Cog):
             duration = "%02dm %02ds" % (minutes, seconds)
 
         # Grabs the songs in the queue...
-        upcoming = list(itertools.islice(player.queue._queue, 0, int(len(player.queue._queue))))
+        upcoming = list(itertools.islice(player.queue._queue, 0, 20))
         fmt = '\n'.join(f"`{(upcoming.index(_)) + 1}.` [{_['title']}]({_['webpage_url']}) | ` {duration} Requested by: {_['requester']}`\n" for _ in upcoming)
         fmt = f"\n__Now Playing__:\n[{vc.source.title}]({vc.source.web_url}) | ` {duration} Requested by: {vc.source.requester}`\n\n__Up Next:__\n" + fmt + f"\n**{len(upcoming)} songs in queue**"
         embed = discord.Embed(title=f'Queue for {ctx.guild.name}', description=fmt, color=discord.Color.green())
