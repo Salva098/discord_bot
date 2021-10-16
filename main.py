@@ -7,13 +7,13 @@ from free_games import free_gamess
 from discord_components import *
 import os
 
+import grupal
 import music
 import experience
 import free_games
-cogs=[music,experience,free_games]
+
+cogs=[music,experience,free_games,grupal]
 bot=commands.Bot(command_prefix='-')
-togetherControl = DiscordTogether(bot)
-# bot=commands.Bot(command_prefix='-')
 
 for i in range(len(cogs)):
   cogs[i].setup(bot)
@@ -31,7 +31,6 @@ async def Juegos_gratis():
     for x in juegos:
         mensajejuego=Embed(title=x.title,description=x.description.strip()[:2045])
         mensajejuego.set_image(url=x.image)
-        # mensajejuego.set_thumbnail(url=x.image)
         mensajejuego.add_field(name="Precio antes",value=x.worth)
         mensajejuego.add_field(name="Plataforma",value=x.plataforms)
         mensajejuego.add_field(name="Tipo",value=x.type)
@@ -47,7 +46,8 @@ async def Juegos_gratis():
 
 @bot.event
 async def on_message(message):
-    if not message.channel.guild.id == 890181927766745088:
+    if message.author.dm_channel==None:
+        message
         if not str(message.channel).startswith("Direct Message with") and not message.author.bot:
             level=Level()
             autor=message.author.id
@@ -70,13 +70,5 @@ async def on_ready():
     Juegos_gratis.start()
 
 
-
-
-
-# bot gobierno de españa
-# bot.run()
-
-
-# ahiidisegratis
 
 bot.run(os.environ.get('DSC_bot'))
