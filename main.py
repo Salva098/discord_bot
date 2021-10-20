@@ -39,9 +39,12 @@ async def Juegos_gratis():
         mensajejuego.add_field(name="Instrucciones",value=x.instructions,inline=False)
         
         for z in canal:
-            await z.send(embed=mensajejuego,components=[
-                Button(label="Pillar el Juego",url=x.open_giveaway_url,style=ButtonStyle.URL)
-            ])
+            try:
+                await z.send(embed=mensajejuego,components=[
+                    Button(label="Pillar el Juego",url=x.open_giveaway_url,style=ButtonStyle.URL)
+                ])
+            except:
+                print("no hay permisos")
     canales.disconect()
 
 @bot.event
