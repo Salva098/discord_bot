@@ -18,7 +18,7 @@ class freegames(commands.Cog):
             sql=Level()
             server_id=ctx.guild.id
             sql.free_games(server_id,chas)
-            ctx.reply("se ha añadido el "+ch+"canal para que envie juegos gratis")
+            await ctx.reply("se ha añadido el "+ch+"canal para que envie juegos gratis")
             sql.disconect()
         else:
             ctx.reply("el canal no existe o no lo has escrito bien")
