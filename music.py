@@ -25,6 +25,7 @@ ytdlopts = {
     'no_warnings': True,
     'default_search': 'auto',
     'age_limit': '15',
+    'extract_flat':True,
     'source_address': '0.0.0.0'  # ipv6 addresses cause issues sometimes
 }
 
@@ -68,8 +69,9 @@ class YTDLSource(discord.PCMVolumeTransformer):
         loop = loop or asyncio.get_event_loop()
         playlist=[]
       
-        to_run = partial(ytdl.extract_info, url=search, download=download)
-        dat = await loop.run_in_executor(None, to_run)
+        # to_run = partial(ytdl.extract_info, url=search, download=download)
+        # dat = await loop.run_in_executor(None, to_run)
+        dat = ytdl.extract_info(url=search, download=False)
 
         if 'entries' in dat:
             # take first item from a playlist
@@ -89,11 +91,11 @@ class YTDLSource(discord.PCMVolumeTransformer):
             try:
                 for x in dat:
                     if x is not None:
-                        playlist.append({'webpage_url': x['webpage_url'], 'requester': ctx.author, 'title': x['title']})
+                        playlist.append({'webpage_url': "https://www.youtube.com/watch?v="+x['url'], 'requester': ctx.author, 'title': x['title']})
                     # return {'webpage_url': data['webpage_url'], 'requester': ctx.author, 'title': data['title']}
                 return playlist,True
             except:
-                return {'webpage_url': dat['webpage_url'], 'requester': ctx.author, 'title': dat['title']},False
+                return {'webpage_url': "https://www.youtube.com/watch?v="+dat['url'], 'requester': ctx.author, 'title': dat['title']},False
         return cls(discord.FFmpegPCMAudio(source), data=data, requester=ctx.author),dat
 
     @classmethod
@@ -395,7 +397,7 @@ class Music(commands.Cog):
         # Grabs the songs in the queue...
         upcoming = list(itertools.islice(player.queue._queue, 0, 20))
         fmt = '\n'.join(f"`{(upcoming.index(_)) + 1}.` [{_['title']}]({_['webpage_url']}) | ` {duration} Requested by: {_['requester']}`\n" for _ in upcoming)
-        fmt = f"\n__Now Playing__:\n[{vc.source.title}]({vc.source.web_url}) | ` {duration} Requested by: {vc.source.requester}`\n\n__Up Next:__\n" + fmt + f"\n**{len(upcoming)} songs in queue**"
+        fmt = f"\n__Now Playing__:\n[{vc.source.title}]({vc.source.web_url}) | ` {duration} Requested by: {vc.source.requester}`\n\n__Up Next:__\n" + fmt + f"\n**{len(player.queue._queue)} songs in queue**"
         embed = discord.Embed(title=f'Queue for {ctx.guild.name}', description=fmt, color=discord.Color.green())
         embed.set_footer(text=f"{ctx.author.display_name}", icon_url=ctx.author.avatar_url)
 
