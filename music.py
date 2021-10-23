@@ -69,34 +69,25 @@ class YTDLSource(discord.PCMVolumeTransformer):
         loop = loop or asyncio.get_event_loop()
         playlist=[]
       
-        # to_run = partial(ytdl.extract_info, url=search, download=download)
-        # dat = await loop.run_in_executor(None, to_run)
-        dat = ytdl.extract_info(url=search, download=False)
+        to_run = partial(ytdl.extract_info, url=search, download=download)
+        dat = await loop.run_in_executor(None, to_run)
 
         if 'entries' in dat:
-            # take first item from a playlist
-            data = dat['entries'][0]
             embed = discord.Embed(title="", description=f"Queued [{dat['title']}]({dat['webpage_url']}) [{ctx.author.mention}]", color=discord.Color.green())
             dat=dat['entries']
             
         else:
-            embed = discord.Embed(title="", description=f"Queued [{dat['title']}]({dat['webpage_url']}) [{ctx.author.mention}]", color=discord.Color.green())
-            data =dat
+            embed = discord.Embed(title="", description=f"Queued [{dat['title']}](https://www.youtube.com/watch?v={dat['id']}) [{ctx.author.mention}]", color=discord.Color.green())
 
         await ctx.send(embed=embed)
 
-        if download:
-            source = ytdl.prepare_filename(data)
-        else:
-            try:
-                for x in dat:
-                    if x is not None:
-                        playlist.append({'webpage_url': "https://www.youtube.com/watch?v="+x['url'], 'requester': ctx.author, 'title': x['title']})
-                    # return {'webpage_url': data['webpage_url'], 'requester': ctx.author, 'title': data['title']}
-                return playlist,True
-            except:
-                return {'webpage_url': "https://www.youtube.com/watch?v="+dat['url'], 'requester': ctx.author, 'title': dat['title']},False
-        return cls(discord.FFmpegPCMAudio(source), data=data, requester=ctx.author),dat
+        try:
+            for x in dat:
+                if x is not None:
+                    playlist.append({'webpage_url': "https://www.youtube.com/watch?v="+x['url'], 'requester': ctx.author, 'title': x['title']})
+            return playlist,True
+        except:
+            return {'webpage_url': "https://www.youtube.com/watch?v="+dat['id'], 'requester': ctx.author, 'title': dat['title']},False
 
     @classmethod
     async def regather_stream(cls, data, *, loop):
