@@ -1,9 +1,8 @@
-
-import psycopg2
+import mysql.connector as mysql
 import os
-from psycopg2 import OperationalError
 
 from discord.ext.commands.core import check
+from mysqlx import OperationalError
 from objects import users
 # id usuario, nivel, experiencia, experiencia maxima
 
@@ -12,14 +11,14 @@ class Level():
         connection=None
         print(os.environ.get('user'))
         try:
-            connection = psycopg2.connect(
+            connection = mysql.connect(
             database=os.environ.get('database'),
             user=os.environ.get('user'),
             password=os.environ.get('password'),
             host=os.environ.get('host'),
             port=os.environ.get('port'),
-        )
-            print("Connection to PostgreSQL DB successful")
+            )
+
         except OperationalError as e:
             print(f"The error '{e}' occurred")
         self.conn=connection
@@ -48,7 +47,8 @@ class Level():
         if not self.check_user(id,id_server):
             try:
                 cursor=self.conn.cursor()
-                cursor.execute("insert into servers (idserver,nserver) values ({},'{}')".format(str(id_server),name_server))
+                querry="insert into servers (idserver,nserver) values ({},'{}')".format(str(id_server),name_server)
+                cursor.execute(querry)
                 cursor.close()
                 self.conn.commit()
             except:
@@ -59,7 +59,8 @@ class Level():
                
                 self.conn.rollback()
                 cursor=self.conn.cursor()
-                cursor.execute("INSERT INTO usuarios (idusuarios) VALUES ('{}')".format(str(id)))
+                sql="INSERT INTO usuarios (idusuarios) VALUES ('{}')".format(str(id))
+                cursor.execute(sql)
                 cursor.close()
                 self.conn.commit()
             # INSERT INTO `discord`.`servers` (`idservers`, `server_name`) VALUES ('12', 'asd');
@@ -115,10 +116,9 @@ class Level():
 
 
     def check_user(self,id:int,id_server:int)->users:
-        # cursor =self.conn.execute("select * from usuarios where idusuarios = {}".format(str(id)))
-        # cursor =self.conn.execute("select * from usuarios")
         cur=self.conn.cursor()
-        cur.execute("select idusuarios,numusuarios,level,exp,exp_max from usuarios,server_usuario where server_usuario.num_usuario=usuarios.numusuarios and usuarios.idusuarios = {} and server_usuario.idserver = {}".format(str(id),str(id_server)))
+        sql="select idusuarios,numusuarios,level,exp,exp_max from usuarios,server_usuario where server_usuario.num_usuario=usuarios.numusuarios and usuarios.idusuarios = {} and server_usuario.idserver = {}".format(str(id),str(id_server))
+        cur.execute(sql)
 
         try:
             usuario=cur.fetchall()[0]
