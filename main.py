@@ -74,4 +74,4 @@ async def on_ready():
 
 
 
-bot.run(os.environ.get('DSC_bot'))
+bot.run(os.environ['DSC_bot'])

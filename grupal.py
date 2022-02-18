@@ -1,5 +1,6 @@
 from discord_together import DiscordTogether
 from discord.ext.commands import command, Cog
+import os
 from discord_components import (
     Button,
     ButtonStyle
@@ -14,7 +15,7 @@ class Grupal(Cog):
     
     @Cog.listener()
     async def on_ready(self):
-        self.togetherControl = await DiscordTogether('token') 
+        self.togetherControl = await DiscordTogether(os.environ['DSC_bot']) 
  
     @command(help="creas una sala para ver cosas en una misma sala")
     async def grupal(self, ctx):
