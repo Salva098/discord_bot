@@ -20,7 +20,7 @@ class Grupal(Cog):
     @command(help="creas una sala para ver cosas en una misma sala")
     async def grupal(self, ctx):
         async def callback(interaction):
-            link=await self.togetherControl.create_link(ctx.author.voice.channel.id,'youtube',max_age =43200)
+            link=await self.togetherControl.create_link(ctx.author.voice.channel.id,interaction.custom_id,max_age =43200)
             embed=Embed(title="Sala de "+interaction.author.display_name, description=f"[Link de la sala para jugar a {interaction.custom_id}]({link})")
             await interaction.send(embed=embed)
 
