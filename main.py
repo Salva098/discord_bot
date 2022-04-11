@@ -7,13 +7,15 @@ from free_games import free_gamess
 from discord_components import *
 import os
 
+import interactions
+
 import grupal
 import music
 import experience
 import free_games
 
 cogs=[music,experience,free_games,grupal]
-bot=commands.Bot(command_prefix='-')
+bot=interactions.Bot(command_prefix='-')
 
 for i in range(len(cogs)):
   cogs[i].setup(bot)
@@ -63,7 +65,15 @@ async def on_message(message):
             level.disconect()
     await bot.process_commands(message)
 
+@bot.command()
+async def modal(ctx):
+    modal = interactions.Modal(
+        title="Application Form",
+        custom_id="mod_app_form",
+        components=[interactions.TextInput(...)],
+    )
 
+    await ctx.popup(modal)
 
 @bot.event
 async def on_ready():
