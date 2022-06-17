@@ -51,7 +51,3 @@ def free_gamess():
             
     return lista_game
 
-    # a=free_games()
-    # ass=mktime_fecha('2021-08-02 22:28:00')
-    # print(ass)
-    # write_fecha(123.1)

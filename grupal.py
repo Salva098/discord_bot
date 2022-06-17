@@ -15,7 +15,7 @@ class Grupal(Cog):
     
     @Cog.listener()
     async def on_ready(self):
-        self.togetherControl = await DiscordTogether('NTk0MjM5NjgxMjYwOTQ1NDM4.XRZi1A.J1iBsus6xt_EPpx4Y9ZLF4DXRAc') 
+        self.togetherControl = await DiscordTogether(os.environ.get("bot_token")) 
  
     @command(help="creas una sala para ver cosas en una misma sala")
     async def grupal(self, ctx):

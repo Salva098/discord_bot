@@ -5,20 +5,33 @@ from discord_together import DiscordTogether
 from levelsql import Level
 from free_games import free_gamess
 from discord_components import *
+import requests
+import json
 import os
 
-import interactions
 
 import grupal
 import music
 import experience
 import free_games
+import allkeyshop
 
-cogs=[music,experience,free_games,grupal]
-bot=interactions.Bot(command_prefix='-')
+cogs=[music,experience,free_games,grupal,allkeyshop]
+bot=commands.Bot(command_prefix='-')
 
 for i in range(len(cogs)):
   cogs[i].setup(bot)
+
+# @tasks.loop(hours=336)
+# async def update_list_games():
+#     games = requests.get('https://www.allkeyshop.com/api/v2/vaks.php?action=gameNames&locale=es_ES&currency=eur')
+#     games = json.loads(games.text)
+#     games=games["games"]
+#     a =json.dumps(games)
+#     f= open('games.json', 'w')
+#     with open('games.json', 'w') as outfile:
+#         json.dump(games, outfile)
+#     print("hecho")
 
 
 @tasks.loop(seconds=60.0)
@@ -81,7 +94,7 @@ async def on_ready():
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="Porno solo"))
     print('My Ready is Body')
     Juegos_gratis.start()
+    # update_list_games.start()
 
 
-
-bot.run(os.environ['DSC_bot'])
+bot.run(os.environ.get("bot_token"))

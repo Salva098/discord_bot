@@ -2,7 +2,7 @@ import mysql.connector as mysql
 import os
 
 from discord.ext.commands.core import check
-from mysqlx import OperationalError
+# from mysql import OperationalError
 from objects import users
 # id usuario, nivel, experiencia, experiencia maxima
 
@@ -12,14 +12,14 @@ class Level():
         print(os.environ.get('user'))
         try:
             connection = mysql.connect(
-            database=os.environ.get('database'),
-            user=os.environ.get('user'),
-            password=os.environ.get('password'),
-            host=os.environ.get('host'),
-            port=os.environ.get('port'),
+            database=os.environ.get("database"),
+            user=os.environ.get("user"),
+            password=os.environ.get("password"),
+            host=os.environ.get("host"),
+            port=os.environ.get("port"),
             )
 
-        except OperationalError as e:
+        except mysql.Error as e:
             print(f"The error '{e}' occurred")
         self.conn=connection
 
@@ -30,7 +30,7 @@ class Level():
         
 
     def  check_freegame(self):
-        cur =self.conn.cursor()
+        cur = self.conn.cursor()
         cur.execute("select free_game from servers where free_game is NOT NULL;")
         try:
             lista=[]
