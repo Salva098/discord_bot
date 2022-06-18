@@ -22,16 +22,15 @@ bot=commands.Bot(command_prefix='-')
 for i in range(len(cogs)):
   cogs[i].setup(bot)
 
-# @tasks.loop(hours=336)
-# async def update_list_games():
-#     games = requests.get('https://www.allkeyshop.com/api/v2/vaks.php?action=gameNames&locale=es_ES&currency=eur')
-#     games = json.loads(games.text)
-#     games=games["games"]
-#     a =json.dumps(games)
-#     f= open('games.json', 'w')
-#     with open('games.json', 'w') as outfile:
-#         json.dump(games, outfile)
-#     print("hecho")
+@tasks.loop(hours=336)
+async def update_list_games():
+    games = requests.get('https://www.allkeyshop.com/api/v2/vaks.php?action=gameNames&locale=es_ES&currency=eur')
+    games = json.loads(games.text)
+    games=games["games"]
+    a =json.dumps(games)
+    with open('games.json', 'w') as outfile:
+        json.dump(games, outfile)
+    print("hecho")
 
 
 @tasks.loop(seconds=60.0)
@@ -78,15 +77,6 @@ async def on_message(message):
             level.disconect()
     await bot.process_commands(message)
 
-@bot.command()
-async def modal(ctx):
-    modal = interactions.Modal(
-        title="Application Form",
-        custom_id="mod_app_form",
-        components=[interactions.TextInput(...)],
-    )
-
-    await ctx.popup(modal)
 
 @bot.event
 async def on_ready():
