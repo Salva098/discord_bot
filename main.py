@@ -8,7 +8,6 @@ from discord_components import *
 import requests
 import json
 import os
-from discord_ui import UI
 
 
 import radio
