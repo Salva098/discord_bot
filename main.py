@@ -8,15 +8,17 @@ from discord_components import *
 import requests
 import json
 import os
+from discord_ui import UI
 
 
+import radio
 import grupal
 import music
 import experience
 import free_games
 import allkeyshop
 
-cogs=[music,experience,free_games,grupal,allkeyshop]
+cogs=[music,experience,free_games,grupal,allkeyshop,heardle,radio]
 bot=commands.Bot(command_prefix='-')
 
 for i in range(len(cogs)):
@@ -84,7 +86,7 @@ async def on_ready():
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="Porno solo"))
     print('My Ready is Body')
     Juegos_gratis.start()
-    # update_list_games.start()
+    update_list_games.start()
 
 
 bot.run(os.environ.get("bot_token"))
